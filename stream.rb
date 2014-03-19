@@ -33,12 +33,16 @@ class Stream
   def to_i
     @value.to_i
   end
+
+  def to_s
+    @value.to_s
+  end
 end
 
 stream = Stream.new(0) { |n| n + 1 }
-stream.filter { |n| n % 2 == 0 }.each { |n| puts n }
+# stream.filter { |n| n % 2 == 0 }.each { |n| puts n }
 
-# while true
-#   stream = stream.next
-#   puts stream.to_s
-# end
+while true
+  stream = stream.next
+  puts stream.to_s
+end
