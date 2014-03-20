@@ -2,47 +2,35 @@
 
 class Stream
   include Enumerable
-  def initialize(init_value, &block)
-    @value = init_value
+  attr_reader :first
+
+  def initialize(first, &block)
+    @first = first
     @block = block
   end
 
-  def next
-    Stream.new(@block.call(@value), &@block)
+  def rest
+    @rest ||= Stream.new(@block.call(first), &@block)
   end
 
-  def filter(&block)
+  def each(&block)
+    block.call(first)
+    rest.each(&block)
+  end
 
-    n = self
-    until (n = n.next) && block.call(n.to_i)
+  def select(&predicate)
+    if predicate.call(first)
+      Stream.new(first) { rest.select(&predicate) }
+    else
+      rest.select(&predicate)
     end
-    Stream.new(n.to_i, &block)
-  end
-
-  def each
-    n = self
-    while n = n.next
-      yield n.to_i
-    end
-  end
-
-  def %(mod)
-    @value % mod
-  end
-
-  def to_i
-    @value.to_i
   end
 
   def to_s
-    @value.to_s
+    first.to_s
   end
 end
 
-stream = Stream.new(0) { |n| n + 1 }
-# stream.filter { |n| n % 2 == 0 }.each { |n| puts n }
-
-while true
-  stream = stream.next
-  puts stream.to_s
-end
+stream = Stream.new(1) { |n| n + 1 }
+puts stream.take(100)
+# puts stream.select { |n| puts "N:#{n}"; n % 3 == 0 }.take(10)
