@@ -18,6 +18,7 @@ class Stream
     rest.each(&block)
   end
 
+  # Does not work yet
   def select(&predicate)
     if predicate.call(first)
       Stream.new(first) { rest.select(&predicate) }
